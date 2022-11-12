@@ -81,9 +81,47 @@ architecture behavioral of cpu is
         signal mx2_output : std_logic_vector(7 downto 0) := (others => '0');
   --- MUX2
 begin
+  --- PC ---
       pc: process (CLK, RESET, pc_inc, pc_dec)
       begin
 
       end process;
+  --- PC ---
+  --- MUX2 ---
+          mux2: process (CLK, RESET, mx2_select) is
+            begin
+                  if RESET = '1' then
+                            mx2_output <= (others => '0')
+                  elsif rising_edge(CLK) then
+                            case mx2_select is
+                              when "00" =>
+                                mx2_output <= IN_DATA;
+                              when "01" =>
+                                mx2_output <= DATA_RDATA + 1;
+                              when "10" =>
+                                mx2_output <= DATA_RDATA - 1;
+                              when others =>
+                                mx2_output <= (others => '0');
+                            end case;
+                  end if;
+            end process;
+            DATA_WDATA <= mx2_output;
+  --- MUX2 ---
+
+
+  --- FSM ---
+          state_logic: process (CLK, RESET, EN) is
+            begin
+              if RESET = '1' then
+                  state <= s_start;
+                  elsif rising_edge(CLK) then
+                    if EN = '1' then
+                      state <= nState;
+                    end if;
+                  end if;            
+            end process;
+
+            fsm: process (state, OUT_BUSY, IN_VLD)
+  --- FSM ---
 end behavioral;
 
