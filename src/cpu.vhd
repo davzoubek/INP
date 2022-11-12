@@ -1,7 +1,7 @@
 -- cpu.vhd: Simple 8-bit CPU (BrainFuck interpreter)
 -- Copyright (C) 2022 Brno University of Technology,
 --                    Faculty of Information Technology
--- Author(s): jmeno <login AT stud.fit.vutbr.cz>
+-- Author(s): xzoube02 <login AT stud.fit.vutbr.cz>
 --
 library ieee;
 use ieee.std_logic_1164.all;
@@ -41,7 +41,49 @@ end cpu;
 --                      Architecture declaration
 -- ----------------------------------------------------------------------------
 architecture behavioral of cpu is
-begin
 
+  --- PC
+          signal pc_reg : std_logic_vector(12 downto 0);
+          signal pc_inc : std_logic;
+          signal pc_dec : std_logic;
+  --- PC
+
+  --- PTR
+          signal ptr_reg : std_logic_vector(12 downto 0);
+          signal ptr_inc : std_logic;
+          signal ptr_dec : std_logic;
+  --- PTR
+
+  ---FSM stavy
+          type fsm_state is (
+            s_start,
+            s_fetch,
+            s_decode,
+            s_pointer_inc,
+            s_pointer_dec,
+            s_value_inc,
+            s_value_dec,
+            s_while_start,
+            s_while_end,
+            s_write,
+            s_load,
+            s_null
+          )
+          signal state : fsm_state := s_start;
+          signal nState : fsm_state;
+  --- MUX
+        signal mx_select : std_logic_vector(1 downto 0) := (others => '0');
+        signal mx_output : std_logic_vector(12 downto 0) := (others => '0');
+  --- MUX
+
+  --- MUX2
+        signal mx2_select : std_logic_vector(1 downto 0) := (others => '0');
+        signal mx2_output : std_logic_vector(7 downto 0) := (others => '0');
+  --- MUX2
+begin
+      pc: process (CLK, RESET, pc_inc, pc_dec)
+      begin
+
+      end process;
 end behavioral;
 
