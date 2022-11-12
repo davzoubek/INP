@@ -87,24 +87,27 @@ begin
 
       end process;
   --- PC ---
+  --- MUX1 ---
+    mux1: process (CLK, mux1_select, pc_out, ptr_out, mux1_sel) is
+      begin
+            case mux1_select is
+              when '0' => DATA_ADDR <= pc_out;
+              when '1' => DATA_ADDR <= ptr_out;
+              when others =>
+            end case;
+      end process mux1;
+      DATA_WDATA <= mx2_output;
+  --- MUX1 ---
   --- MUX2 ---
-          mux2: process (CLK, RESET, mx2_select) is
+          mux2: process (CLK, IN_DATA, mux2_select, DATA_RDATA) is
             begin
-                  if RESET = '1' then
-                            mx2_output <= (others => '0')
-                  elsif rising_edge(CLK) then
-                            case mx2_select is
-                              when "00" =>
-                                mx2_output <= IN_DATA;
-                              when "01" =>
-                                mx2_output <= DATA_RDATA + 1;
-                              when "10" =>
-                                mx2_output <= DATA_RDATA - 1;
-                              when others =>
-                                mx2_output <= (others => '0');
-                            end case;
-                  end if;
-            end process;
+                  case mux2_select is
+                    when "00" => DATA_WDATA <= IN_DATA;
+                    when "10" => DATA_WDATA <= DATA_RDATA + 1;
+                    when "01" => DATA_WDATA <= DATA_RDATA - 1;
+                    when others =>
+                  end case;
+            end process mux2;
             DATA_WDATA <= mx2_output;
   --- MUX2 ---
 
@@ -122,6 +125,29 @@ begin
             end process;
 
             fsm: process (state, OUT_BUSY, IN_VLD)
+            begin
+              cnt_inc <= '0';
+              cnt_dec <= '0';
+              pc_inc <= '0';
+              pc_dec <= '0';
+              ptr_inc <= '0';
+              ptr_dec <= '0';
+              DATA_EN <= '0';
+              DATA_RDWR <= '0';
+              OUT_WE <= '0';
+              IN_REQ <= '0';
+              mx1_select <= "00";
+              mx2_select <= "00";
+
+              case state is
+                when s_start =>
+                  nState <= s_fetch;
+                when s_fetch =>
+                  CODE_EN <= '1';
+                  nState <= s_decode;
+                when s_decode =>
+                  case CODE_DATA is 
+            end process;
   --- FSM ---
 end behavioral;
 
